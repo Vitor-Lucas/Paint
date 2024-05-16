@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using Microsoft.VisualBasic;
 
 namespace Paint
 {
@@ -14,9 +16,13 @@ namespace Paint
     {
 
         int qtd_clicks = 0;
-        int x0, y0, x1, y1, x2, y2;
+        int x0, y0, x1, y1, x2, y2,r,r_x,r_y,initial;
+
+        Color Color1,Color2;
+
 
         String operation;
+        String cor;
 
         public Form1()
         {
@@ -39,7 +45,7 @@ namespace Paint
             e.Graphics.DrawLine(pen, x, y, x+1, y);
         }
 
-        void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, int radius, int initial_angle, int final_angle)
+        void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, float radius, int initial_angle, int final_angle)
         {
             for(float thetha = initial_angle; thetha <= final_angle; thetha+= 0.33f)
             {
@@ -75,14 +81,53 @@ namespace Paint
             DrawLine(e, pen, x2, y2, x0, y0);
         }
 
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            operation = "Draw Line";
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            GetPen(0,0,0);
+            cor = "Black";
+        }
+
         private void button3_Click(object sender, EventArgs e)
         {
-            //operation = "Draw circle";
+            String str = Interaction.InputBox("Digite o raio do circulo:", "", "");
+            r = int.Parse(str);
+            //MessageBox.Show(r.ToString());
+            operation = "Draw circle";
+            
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            //operation = "Draw elipse";
+            String str = Interaction.InputBox("Digite o angulo inicial:", "", "");
+            initial = int.Parse(str);
+
+            String str_rx = Interaction.InputBox("Digite a altura da elipse:", "", "");
+            r_x = int.Parse(str_rx);
+
+            String str_ry = Interaction.InputBox("Digite o a largura da elipse:", "", "");
+            r_y = int.Parse(str_ry);
+
+            operation = "Draw elipse";
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -107,26 +152,54 @@ namespace Paint
            //DrawArc(e, pen, 100, 100, 100, 200, 0, 360);
 
 
-            switch (operation)
+            /*switch (operation)
             {
                 case "Draw Triangle":
                     DrawTriangle(e, pen, x0, y0, x1, y1, x2, y2); break;
                 case "Draw Rectangle":
                     DrawRectangle(e, pen, x0, y0, (x1 - x0), (y1 - y0)); break;
-               /* case "Draw Circle":
+                case "Draw circle":
                     DrawArc(e, pen, x0, y0, r,0,360); break;
                 case "Draw elipse":
-                    DrawArc(e, pen, x0, y0, r_x, r_y, 0, 360); break;
-               case "Draw losangle":
-                    DrawLosangle(); break;
-               case "Draw pentagono":
-                    DrawPentagono(); break;
-                
-                */
+                    DrawArc(e, pen, x0, y0, r_x, r_y, initial , 360); break;
+                case "Draw Line":
+                    DrawLine(e,pen,x0,y0,x1,y1); break;
 
+                    /* case "Draw losangle":
+                          DrawLosangle(); break;
+                     case "Draw pentagono":
+                          DrawPentagono(); break;
+
+                      */
+
+  
+            switch (cor)
+            {
+                case "Black":
+                    switch (operation)
+                    {
+                        case "Draw Triangle":
+                            DrawTriangle(e, pen, x0, y0, x1, y1, x2, y2); break;
+                        case "Draw Rectangle":
+                            DrawRectangle(e, pen, x0, y0, (x1 - x0), (y1 - y0)); break;
+                        case "Draw circle":
+                            DrawArc(e, pen, x0, y0, r, 0, 360); break;
+                        case "Draw elipse":
+                            DrawArc(e, pen, x0, y0, r_x, r_y, initial, 360); break;
+                        case "Draw Line":
+                            DrawLine(e, pen, x0, y0, x1, y1); break;
+
+                            /* case "Draw losangle":
+                                  DrawLosangle(); break;
+                             case "Draw pentagono":
+                                  DrawPentagono(); break;
+
+                              */
+
+                    }
+                    break;
 
             }
-            
         }
 
 
@@ -161,15 +234,31 @@ namespace Paint
                 {
                     qtd_clicks = 0;
                     Invalidate();
+
+                }else if (operation == "Draw Line")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
                 }
+                
                     
                 
             }
             else if (qtd_clicks == 1)
             {
                 x0 = e.X; y0 = e.Y;
-                
+                if(operation == "Draw circle")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                    
+                }else if(operation == "Draw elipse")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                }
             }
+
 
         }
     }
