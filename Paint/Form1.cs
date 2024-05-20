@@ -101,9 +101,18 @@ namespace Paint
             operation = "Draw Line";
         }
 
+        private void button13_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button24_Click(object sender, EventArgs e)
+        {
+            cor = "Green";
+        }
+
         private void button7_Click(object sender, EventArgs e)
         {
-            GetPen(0,0,0);
             cor = "Black";
         }
 
@@ -132,12 +141,12 @@ namespace Paint
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //operation = "Draw losangle";
+            operation = "Draw losangle";
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            //operation = "Draw pentagono";
+            operation = "Draw pentagono";
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -147,59 +156,38 @@ namespace Paint
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            Pen pen = GetPen(0, 0, 0);
 
-           //DrawArc(e, pen, 100, 100, 100, 200, 0, 360);
+            
+            Pen pen = GetPen(0,0,0);
+            switch (cor)
+            {
+                case "Black":
+                    pen = GetPen(0,0,0); break;
+                case "Green":
+                    pen = GetPen(0, 255, 0); break;
 
+            }
 
-            /*switch (operation)
+            switch (operation)
             {
                 case "Draw Triangle":
                     DrawTriangle(e, pen, x0, y0, x1, y1, x2, y2); break;
                 case "Draw Rectangle":
                     DrawRectangle(e, pen, x0, y0, (x1 - x0), (y1 - y0)); break;
                 case "Draw circle":
-                    DrawArc(e, pen, x0, y0, r,0,360); break;
+                    DrawArc(e, pen, x0, y0, r, 0, 360); break;
                 case "Draw elipse":
-                    DrawArc(e, pen, x0, y0, r_x, r_y, initial , 360); break;
+                    DrawArc(e, pen, x0, y0, r_x, r_y, initial, 360); break;
                 case "Draw Line":
-                    DrawLine(e,pen,x0,y0,x1,y1); break;
+                    DrawLine(e, pen, x0, y0, x1, y1); break;
 
-                    /* case "Draw losangle":
-                          DrawLosangle(); break;
-                     case "Draw pentagono":
-                          DrawPentagono(); break;
-
-                      */
-
-  
-            switch (cor)
-            {
-                case "Black":
-                    switch (operation)
-                    {
-                        case "Draw Triangle":
-                            DrawTriangle(e, pen, x0, y0, x1, y1, x2, y2); break;
-                        case "Draw Rectangle":
-                            DrawRectangle(e, pen, x0, y0, (x1 - x0), (y1 - y0)); break;
-                        case "Draw circle":
-                            DrawArc(e, pen, x0, y0, r, 0, 360); break;
-                        case "Draw elipse":
-                            DrawArc(e, pen, x0, y0, r_x, r_y, initial, 360); break;
-                        case "Draw Line":
-                            DrawLine(e, pen, x0, y0, x1, y1); break;
-
-                            /* case "Draw losangle":
-                                  DrawLosangle(); break;
-                             case "Draw pentagono":
-                                  DrawPentagono(); break;
-
-                              */
-
-                    }
-                    break;
-
+                    /*case "Draw losangle":
+                              DrawLosangle(); break;
+                    case "Draw pentagono":
+                              DrawPentagono(); break;*/
             }
+                      
+
         }
 
 
