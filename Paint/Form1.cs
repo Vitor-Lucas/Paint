@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using Microsoft.VisualBasic;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Paint
 {
@@ -22,7 +23,8 @@ namespace Paint
             x2, y2,
             x3, y3,
             x4, y4,
-            r,r_x,r_y,initial;
+            r,r_x,r_y,
+            initial_angle, final_angle;
 
         
         
@@ -46,7 +48,7 @@ namespace Paint
         void DrawLine(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1)
         {
             e.Graphics.DrawLine(pen, x0, y0, x1, y1);
-            json = "{ \"Reta\": \"X1\", \"Y1\": “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "] }";
+            json = "{ \"Line\": \"X1\", \"Y1\": “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "] }";
         }
         
         void DrawPoint(PaintEventArgs e, Pen pen, int x, int y)
@@ -66,7 +68,7 @@ namespace Paint
                 DrawPoint(e, pen, x, y);
             }
 
-            json = "{ \"Circulo\": \"X_CENTER\", \"Y_CENTER\", “RADIUS” :[" + x_center + "," + y_center + "," + radius + "] }";
+            json = "{ \"Circle\": \"X_CENTER\", \"Y_CENTER\", “RADIUS” :[" + x_center + "," + y_center + "," + radius + "] }";
         }
         void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, int radius_x, int radius_y, int initial_angle, int final_angle)
         {
@@ -79,13 +81,19 @@ namespace Paint
                 DrawPoint(e, pen, x, y);
             }
 
-            json = "{ \"Elipse\": \"X_CENTER\", \"Y_CENTER\": “X_RAIO”,”Y_RAIO” : “INITIAL_ANGLE”,”FINAL_ANGLE”:[" + x_center + "," + y_center + ":" + radius_x + "," + radius_y + ":" + initial_angle + "," + final_angle + "] }";
+            json = "{ \"Elipse\": \"X_CENTER\", \"Y_CENTER\": “X_RAIO”,”Y_RAIO” : “INITIAL_ANGLE”,”FINAL_ANGLE”:[" + x_center + "," + y_center + "," + radius_x + "," + radius_y + "," + initial_angle + "," + final_angle + "] }";
         }
 
-        void DrawRectangle(PaintEventArgs e, Pen pen, int x, int y, int width, int height)
+        void DrawRectangle(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1)
         {
+            int x = Math.Min(x0, x1);
+            int y = Math.Min(y0, y1);
+            int width = Math.Max(x0, x1) - x;
+            int height = Math.Max(y0, y1) - y;
+
+
             e.Graphics.DrawRectangle(pen, x, y, width, height);
-            json = "{ \"Retangulo\": \"X\", \"Y\": “WIDTH”,”HEIGHT”:[" + x + "," + y + "," + width + "," + height + "] }";
+            json = "{ \"Rectangle\": \"X0\", \"Y0\": “X1”,”Y1”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "] }";
         }
 
         void DrawTriangle(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2)
@@ -94,7 +102,7 @@ namespace Paint
             DrawLine(e, pen, x1, y1, x2, y2);
             DrawLine(e, pen, x2, y2, x0, y0);
 
-            json = "{ \"Triangulo\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2”[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "] }";
+            json = "{ \"Triangle\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "] }";
         }
 
         void DrawPentagon(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
@@ -105,7 +113,7 @@ namespace Paint
             DrawLine(e, pen, x4, y4, x3, y3);
             DrawLine(e, pen, x4, y4, x0, y0);
 
-            json = "{ \"Pentagono\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : “X4”,”Y4”: [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "," + x4 + "," + y4 + "] }";
+            json = "{ \"Pentagon\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : “X4”,”Y4”: [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "," + x4 + "," + y4 + "] }";
         }
 
         void DrawDiamond(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3)
@@ -146,12 +154,98 @@ namespace Paint
             StreamWriter arquivo = new StreamWriter(path);
             arquivo.WriteLine(json);
             arquivo.Close();
+            MessageBox.Show("File created succesfully!");
         }
 
         private void carregar_button_Click(object sender, EventArgs e)
         {
-            StreamReader arquivo = new StreamReader(openFileDialog1.ShowDialog().ToString());
-            MessageBox.Show(arquivo.ReadToEnd());
+            openFileDialog1.ShowDialog();
+            StreamReader arquivo = new StreamReader(openFileDialog1.FileName.ToString());
+            String json = arquivo.ReadToEnd();
+            arquivo.Close();
+            
+            String[] separatedString = json.Replace("{", " ").Replace("}", " ").Replace("\""," ").Trim().Split(':');
+            String figure = separatedString[0].Trim();
+
+            switch (figure)
+            {
+                case "Triangle":
+                    String[] variables = separatedString[4].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    x2 = int.Parse(variables[4]);
+                    y2 = int.Parse(variables[5]);
+                    operation = "Draw Triangle";
+                    break;
+
+                case "Pentagon":
+                    variables = separatedString[6].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    x2 = int.Parse(variables[4]);
+                    y2 = int.Parse(variables[5]);
+                    x3 = int.Parse(variables[6]);
+                    y3 = int.Parse(variables[7]);
+                    x4 = int.Parse(variables[8]);
+                    y4 = int.Parse(variables[9]);
+                    operation = "Draw Pentagon";
+                    break;
+
+                case "Rectangle":
+                    variables = separatedString[3].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    operation = "Draw Rectangle";
+                    break;
+
+                case "Diamond":
+                    variables = separatedString[5].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    x2 = int.Parse(variables[4]);
+                    y2 = int.Parse(variables[5]);
+                    x3 = int.Parse(variables[6]);
+                    y3 = int.Parse(variables[7]);
+                    operation = "Draw Diamond";
+                    break;
+
+                case "Circle":
+                    variables = separatedString[2].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    r = int.Parse(variables[2]);
+                    operation = "Draw Circle";
+                    break;
+
+                case "Elipse":
+                    variables = separatedString[4].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    r_x = int.Parse(variables[2]);
+                    r_y = int.Parse(variables[3]);
+                    initial_angle = int.Parse(variables[4]);
+                    final_angle = int.Parse(variables[5]);
+                    operation = "Draw Elipse";
+                    break;
+
+                case "Line":
+                    variables = separatedString[3].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    operation = "Draw Line";
+                    break;
+            }
+            Invalidate();
         }
 
         private void button13_Click(object sender, EventArgs e)
@@ -184,14 +278,17 @@ namespace Paint
             String str = Interaction.InputBox("Digite o raio do circulo:", "", "");
             r = int.Parse(str);
             //MessageBox.Show(r.ToString());
-            operation = "Draw circle";
+            operation = "Draw Circle";
             
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             String str = Interaction.InputBox("Digite o angulo inicial:", "", "");
-            initial = int.Parse(str);
+            initial_angle = int.Parse(str);
+
+            String str_af = Interaction.InputBox("Digite o angulo final:", "", "");
+            final_angle = int.Parse(str_af);
 
             String str_rx = Interaction.InputBox("Digite a altura da elipse:", "", "");
             r_x = int.Parse(str_rx);
@@ -231,11 +328,11 @@ namespace Paint
                 case "Draw Triangle":
                     DrawTriangle(e, pen, x0, y0, x1, y1, x2, y2); break;
                 case "Draw Rectangle":
-                    DrawRectangle(e, pen, x0, y0, (x1 - x0), (y1 - y0)); break;
-                case "Draw circle":
+                    DrawRectangle(e, pen, x0, y0, x1, y1); break;
+                case "Draw Circle":
                     DrawArc(e, pen, x0, y0, r, 0, 360); break;
-                case "Draw elipse":
-                    DrawArc(e, pen, x0, y0, r_x, r_y, initial, 360); break;
+                case "Draw Elipse":
+                    DrawArc(e, pen, x0, y0, r_x, r_y, initial_angle, final_angle); break;
                 case "Draw Line":
                     DrawLine(e, pen, x0, y0, x1, y1); break;
                 case "Draw Diamond":
@@ -312,12 +409,12 @@ namespace Paint
             else if (qtd_clicks == 1)
             {
                 x0 = e.X; y0 = e.Y;
-                if(operation == "Draw circle")
+                if(operation == "Draw Circle")
                 {
                     qtd_clicks = 0;
                     Invalidate();
                     
-                }else if(operation == "Draw elipse")
+                }else if(operation == "Draw Elipse")
                 {
                     qtd_clicks = 0;
                     Invalidate();
