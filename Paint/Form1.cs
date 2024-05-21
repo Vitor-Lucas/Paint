@@ -24,13 +24,13 @@ namespace Paint
             x2, y2,
             x3, y3,
             x4, y4,
-            r,r_x,r_y,
+            radius,radius_x,radius_y,
             initial_angle, final_angle;
 
         int red, green, blue;
 
         System.Windows.Forms.Button selected_color_button;
-        String operation;
+        String draw_operation;
         String json;
         bool imported_shape;
 
@@ -45,7 +45,6 @@ namespace Paint
 
             return pen;
         }
-
         float[] GetPattern(int index)
         {
             switch (index)
@@ -65,18 +64,17 @@ namespace Paint
             }
         }
 
+        void DrawPoint(PaintEventArgs e, Pen pen, int x, int y)
+        {
+            e.Graphics.DrawLine(pen, x, y, x + 1, y);
+
+        }
         void DrawLine(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1)
         {
             e.Graphics.DrawLine(pen, x0, y0, x1, y1);
             json = "{ \"Line\": \"X1\", \"Y1\": “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
         }
         
-        void DrawPoint(PaintEventArgs e, Pen pen, int x, int y)
-        {
-            e.Graphics.DrawLine(pen, x, y, x+1, y);
-            
-        }
-
         void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, float radius, int initial_angle, int final_angle)
         {
             for (float thetha = initial_angle; thetha <= final_angle; thetha += 0.33f)
@@ -147,21 +145,9 @@ namespace Paint
 
         }
 
-        private void button9_Click(object sender, EventArgs e)
-        {
-            selected_color_button.BackColor = button9.BackColor;
-        }
+        
 
-        private void button8_Click(object sender, EventArgs e)
-        {
-            selected_color_button.BackColor = button8.BackColor;
-        }
-
-        private void button27_Click(object sender, EventArgs e)
-        {
-            operation = "Draw Line";
-        }
-
+        
         private void salvar_button_Click(object sender, EventArgs e)
         {
             String path = @"C:\Arquivos\dados.dat";
@@ -170,11 +156,294 @@ namespace Paint
             arquivo.Close();
             MessageBox.Show("File created successfully!");
         }
+        
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            selected_color_button = FirstColorButton;
+            draw_operation = "Draw Line";
+            espessura.SelectedIndex = 0;
+            patternComboBox.SelectedIndex = 1;
+        }
+
+        private void carregar_button_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.ShowDialog();
+            StreamReader arquivo = new StreamReader(openFileDialog1.FileName.ToString());
+            String json = arquivo.ReadToEnd();
+            arquivo.Close();
+            
+            String[] separatedString = json.Replace("{", " ").Replace("}", " ").Replace("\""," ").Trim().Split(':');
+            String figure = separatedString[0].Trim();
+
+            switch (figure)
+            {
+                case "Triangle":
+                    String[] variables = separatedString[4].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    x2 = int.Parse(variables[4]);
+                    y2 = int.Parse(variables[5]);
+                    red = int.Parse(variables[6]);
+                    green = int.Parse(variables[7]);
+                    blue = int.Parse(variables[8]);
+                    draw_operation = "Draw Triangle";
+                    break;
+
+                case "Pentagon":
+                    variables = separatedString[6].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    x2 = int.Parse(variables[4]);
+                    y2 = int.Parse(variables[5]);
+                    x3 = int.Parse(variables[6]);
+                    y3 = int.Parse(variables[7]);
+                    x4 = int.Parse(variables[8]);
+                    y4 = int.Parse(variables[9]);
+                    red = int.Parse(variables[10]);
+                    green = int.Parse(variables[11]);
+                    blue = int.Parse(variables[12]);
+                    draw_operation = "Draw Pentagon";
+                    break;
+
+                case "Rectangle":
+                    variables = separatedString[3].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    red = int.Parse(variables[4]);
+                    green = int.Parse(variables[5]);
+                    blue = int.Parse(variables[6]);
+                    draw_operation = "Draw Rectangle";
+                    break;
+
+                case "Diamond":
+                    variables = separatedString[5].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    x2 = int.Parse(variables[4]);
+                    y2 = int.Parse(variables[5]);
+                    x3 = int.Parse(variables[6]);
+                    y3 = int.Parse(variables[7]);
+                    red = int.Parse(variables[8]);
+                    green = int.Parse(variables[9]);
+                    blue = int.Parse(variables[10]);
+                    draw_operation = "Draw Diamond";
+                    break;
+
+                case "Circle":
+                    variables = separatedString[2].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    radius = int.Parse(variables[2]);
+                    red = int.Parse(variables[3]);
+                    green = int.Parse(variables[4]);
+                    blue = int.Parse(variables[5]);
+                    draw_operation = "Draw Circle";
+                    break;
+
+                case "Elipse":
+                    variables = separatedString[4].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    radius_x = int.Parse(variables[2]);
+                    radius_y = int.Parse(variables[3]);
+                    initial_angle = int.Parse(variables[4]);
+                    final_angle = int.Parse(variables[5]);
+                    red = int.Parse(variables[6]);
+                    green = int.Parse(variables[7]);
+                    blue = int.Parse(variables[8]);
+                    draw_operation = "Draw Elipse";
+                    break;
+
+                case "Line":
+                    variables = separatedString[3].Replace("[", " ").Replace("]", " ").Trim().Split(',');
+                    x0 = int.Parse(variables[0]);
+                    y0 = int.Parse(variables[1]);
+                    x1 = int.Parse(variables[2]);
+                    y1 = int.Parse(variables[3]);
+                    red = int.Parse(variables[4]);
+                    green = int.Parse(variables[5]);
+                    blue = int.Parse(variables[6]);
+                    draw_operation = "Draw Line";
+                    break;
+            }
+            imported_shape = true;
+            Invalidate();
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+
+            int thickness = espessura.SelectedIndex;
+            float[] pattern = GetPattern(patternComboBox.SelectedIndex);
+            
+
+            if (pattern == null)
+                return;
+
+            
+            if (!imported_shape)
+            {
+                red = (int) selected_color_button.BackColor.R;
+                green = (int) selected_color_button.BackColor.G;
+                blue = (int) selected_color_button.BackColor.B;
+            }
+            
+            
+            Pen pen = GetPen(red, green, blue, thickness, pattern);
+                
+
+            switch (draw_operation)
+            {
+                case "Draw Triangle":
+                    DrawTriangle(e, pen, x0, y0, x1, y1, x2, y2); break;
+                case "Draw Rectangle":
+                    DrawRectangle(e, pen, x0, y0, x1, y1); break;
+                case "Draw Circle":
+                    DrawArc(e, pen, x0, y0, radius, 0, 360); break;
+                case "Draw Elipse":
+                    DrawArc(e, pen, x0, y0, radius_x, radius_y, initial_angle, final_angle); break;
+                case "Draw Line":
+                    DrawLine(e, pen, x0, y0, x1, y1); break;
+                case "Draw Diamond":
+                    DrawDiamond(e, pen, x0, y0, x1, y1, x2, y2, x3, y3); break;
+                case "Draw Pentagon":
+                    DrawPentagon(e, pen, x0, y0, x1, y1, x2, y2, x3, y3, x4, y4); break;
+            }
+
+            imported_shape = false;
+        }
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            qtd_clicks++;
+            if(qtd_clicks == 5)
+            {
+                
+                x4 = e.X; y4 = e.Y;
+                if(draw_operation == "Draw Pentagon")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                }
+                
+            }
+            else if(qtd_clicks == 4)
+            {
+                x3 = e.X; y3 = e.Y;
+                if(draw_operation == "Draw Diamond")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                }
+            }
+            else if (qtd_clicks == 3)
+            {
+                x2 = e.X; y2 = e.Y;
+                if (draw_operation == "Draw Triangle")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                }                    
+            }
+            else if (qtd_clicks == 2)
+            {
+                x1 = e.X; y1 = e.Y;
+                if (draw_operation == "Draw Rectangle")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+
+                }else if (draw_operation == "Draw Line")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                }
+            }
+            else if (qtd_clicks == 1)
+            {
+                x0 = e.X; y0 = e.Y;
+                if(draw_operation == "Draw Circle")
+                {
+                    String str = Interaction.InputBox("Digite o raio do circulo:", "", "");
+                    radius = int.Parse(str);
+                    qtd_clicks = 0;
+                    Invalidate();
+                    
+                }else if(draw_operation == "Draw Elipse")
+                {
+                    String str = Interaction.InputBox("Digite o angulo inicial:", "", "");
+                    initial_angle = int.Parse(str);
+
+                    String str_af = Interaction.InputBox("Digite o angulo final:", "", "");
+                    final_angle = int.Parse(str_af);
+
+                    String str_rx = Interaction.InputBox("Digite a altura da elipse:", "", "");
+                    radius_x = int.Parse(str_rx);
+
+                    String str_ry = Interaction.InputBox("Digite o a largura da elipse:", "", "");
+                    radius_y = int.Parse(str_ry);
+
+                    qtd_clicks = 0;
+                    Invalidate();
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            draw_operation = "Draw Rectangle";
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            draw_operation = "Draw Triangle";
+        }
+
+        private void button27_Click(object sender, EventArgs e)
+        {
+            draw_operation = "Draw Line";
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            draw_operation = "Draw Diamond";
+        }
+
+        private void pentagono_button_Click(object sender, EventArgs e)
+        {
+            draw_operation = "Draw Pentagon";
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            draw_operation = "Draw Elipse";
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            draw_operation = "Draw Circle";
+        }
+
+        private void FirstColorButton_Click(object sender, EventArgs e)
+        {
+            selected_color_button = FirstColorButton;
+        }
         private void SecondColorButton_Click(object sender, EventArgs e)
         {
             selected_color_button = SecondColorButton;
         }
-
+        private void button7_Click(object sender, EventArgs e)
+        {
+            selected_color_button.BackColor = button7.BackColor;
+        }
         private void button10_Click(object sender, EventArgs e)
         {
             selected_color_button.BackColor = button10.BackColor;
@@ -219,7 +488,15 @@ namespace Paint
         {
             selected_color_button.BackColor = button23.BackColor;
         }
+        private void button9_Click(object sender, EventArgs e)
+        {
+            selected_color_button.BackColor = button9.BackColor;
+        }
 
+        private void button8_Click(object sender, EventArgs e)
+        {
+            selected_color_button.BackColor = button8.BackColor;
+        }
         private void button22_Click(object sender, EventArgs e)
         {
             selected_color_button.BackColor = button22.BackColor;
@@ -250,132 +527,6 @@ namespace Paint
             selected_color_button.BackColor = button17.BackColor;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            selected_color_button = FirstColorButton;
-            operation = "Draw Line";
-            espessura.SelectedIndex = 0;
-            patternComboBox.SelectedIndex = 1;
-        }
-
-        private void FirstColorButton_Click(object sender, EventArgs e)
-        {
-            selected_color_button = FirstColorButton;
-        }
-
-        private void carregar_button_Click(object sender, EventArgs e)
-        {
-            openFileDialog1.ShowDialog();
-            StreamReader arquivo = new StreamReader(openFileDialog1.FileName.ToString());
-            String json = arquivo.ReadToEnd();
-            arquivo.Close();
-            
-            String[] separatedString = json.Replace("{", " ").Replace("}", " ").Replace("\""," ").Trim().Split(':');
-            String figure = separatedString[0].Trim();
-
-            switch (figure)
-            {
-                case "Triangle":
-                    String[] variables = separatedString[4].Replace("[", " ").Replace("]", " ").Trim().Split(',');
-                    x0 = int.Parse(variables[0]);
-                    y0 = int.Parse(variables[1]);
-                    x1 = int.Parse(variables[2]);
-                    y1 = int.Parse(variables[3]);
-                    x2 = int.Parse(variables[4]);
-                    y2 = int.Parse(variables[5]);
-                    red = int.Parse(variables[6]);
-                    green = int.Parse(variables[7]);
-                    blue = int.Parse(variables[8]);
-                    operation = "Draw Triangle";
-                    break;
-
-                case "Pentagon":
-                    variables = separatedString[6].Replace("[", " ").Replace("]", " ").Trim().Split(',');
-                    x0 = int.Parse(variables[0]);
-                    y0 = int.Parse(variables[1]);
-                    x1 = int.Parse(variables[2]);
-                    y1 = int.Parse(variables[3]);
-                    x2 = int.Parse(variables[4]);
-                    y2 = int.Parse(variables[5]);
-                    x3 = int.Parse(variables[6]);
-                    y3 = int.Parse(variables[7]);
-                    x4 = int.Parse(variables[8]);
-                    y4 = int.Parse(variables[9]);
-                    red = int.Parse(variables[10]);
-                    green = int.Parse(variables[11]);
-                    blue = int.Parse(variables[12]);
-                    operation = "Draw Pentagon";
-                    break;
-
-                case "Rectangle":
-                    variables = separatedString[3].Replace("[", " ").Replace("]", " ").Trim().Split(',');
-                    x0 = int.Parse(variables[0]);
-                    y0 = int.Parse(variables[1]);
-                    x1 = int.Parse(variables[2]);
-                    y1 = int.Parse(variables[3]);
-                    red = int.Parse(variables[4]);
-                    green = int.Parse(variables[5]);
-                    blue = int.Parse(variables[6]);
-                    operation = "Draw Rectangle";
-                    break;
-
-                case "Diamond":
-                    variables = separatedString[5].Replace("[", " ").Replace("]", " ").Trim().Split(',');
-                    x0 = int.Parse(variables[0]);
-                    y0 = int.Parse(variables[1]);
-                    x1 = int.Parse(variables[2]);
-                    y1 = int.Parse(variables[3]);
-                    x2 = int.Parse(variables[4]);
-                    y2 = int.Parse(variables[5]);
-                    x3 = int.Parse(variables[6]);
-                    y3 = int.Parse(variables[7]);
-                    red = int.Parse(variables[8]);
-                    green = int.Parse(variables[9]);
-                    blue = int.Parse(variables[10]);
-                    operation = "Draw Diamond";
-                    break;
-
-                case "Circle":
-                    variables = separatedString[2].Replace("[", " ").Replace("]", " ").Trim().Split(',');
-                    x0 = int.Parse(variables[0]);
-                    y0 = int.Parse(variables[1]);
-                    r = int.Parse(variables[2]);
-                    red = int.Parse(variables[3]);
-                    green = int.Parse(variables[4]);
-                    blue = int.Parse(variables[5]);
-                    operation = "Draw Circle";
-                    break;
-
-                case "Elipse":
-                    variables = separatedString[4].Replace("[", " ").Replace("]", " ").Trim().Split(',');
-                    x0 = int.Parse(variables[0]);
-                    y0 = int.Parse(variables[1]);
-                    r_x = int.Parse(variables[2]);
-                    r_y = int.Parse(variables[3]);
-                    initial_angle = int.Parse(variables[4]);
-                    final_angle = int.Parse(variables[5]);
-                    red = int.Parse(variables[6]);
-                    green = int.Parse(variables[7]);
-                    blue = int.Parse(variables[8]);
-                    operation = "Draw Elipse";
-                    break;
-
-                case "Line":
-                    variables = separatedString[3].Replace("[", " ").Replace("]", " ").Trim().Split(',');
-                    x0 = int.Parse(variables[0]);
-                    y0 = int.Parse(variables[1]);
-                    x1 = int.Parse(variables[2]);
-                    y1 = int.Parse(variables[3]);
-                    red = int.Parse(variables[4]);
-                    green = int.Parse(variables[5]);
-                    blue = int.Parse(variables[6]);
-                    operation = "Draw Line";
-                    break;
-            }
-            imported_shape = true;
-            Invalidate();
-        }
-
         private void button13_Click(object sender, EventArgs e)
         {
             selected_color_button.BackColor = button13.BackColor;
@@ -384,166 +535,6 @@ namespace Paint
         private void button24_Click(object sender, EventArgs e)
         {
             selected_color_button.BackColor = button24.BackColor;
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            selected_color_button.BackColor = button7.BackColor;
-        }
-
-        private void pentagono_button_Click(object sender, EventArgs e)
-        {
-            operation = "Draw Pentagon";
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            String str = Interaction.InputBox("Digite o raio do circulo:", "", "");
-            r = int.Parse(str);
-            //MessageBox.Show(r.ToString());
-            operation = "Draw Circle";
-            
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            String str = Interaction.InputBox("Digite o angulo inicial:", "", "");
-            initial_angle = int.Parse(str);
-
-            String str_af = Interaction.InputBox("Digite o angulo final:", "", "");
-            final_angle = int.Parse(str_af);
-
-            String str_rx = Interaction.InputBox("Digite a altura da elipse:", "", "");
-            r_x = int.Parse(str_rx);
-
-            String str_ry = Interaction.InputBox("Digite o a largura da elipse:", "", "");
-            r_y = int.Parse(str_ry);
-
-            operation = "Draw Elipse";
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            operation = "Draw Diamond";
-        }
-
-
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-
-            int thickness = espessura.SelectedIndex;
-            float[] pattern = GetPattern(patternComboBox.SelectedIndex);
-            
-
-            if (pattern == null)
-                return;
-
-            
-            if (!imported_shape)
-            {
-                red = (int) selected_color_button.BackColor.R;
-                green = (int) selected_color_button.BackColor.G;
-                blue = (int) selected_color_button.BackColor.B;
-            }
-            
-            
-            Pen pen = GetPen(red, green, blue, thickness, pattern);
-                
-
-            switch (operation)
-            {
-                case "Draw Triangle":
-                    DrawTriangle(e, pen, x0, y0, x1, y1, x2, y2); break;
-                case "Draw Rectangle":
-                    DrawRectangle(e, pen, x0, y0, x1, y1); break;
-                case "Draw Circle":
-                    DrawArc(e, pen, x0, y0, r, 0, 360); break;
-                case "Draw Elipse":
-                    DrawArc(e, pen, x0, y0, r_x, r_y, initial_angle, final_angle); break;
-                case "Draw Line":
-                    DrawLine(e, pen, x0, y0, x1, y1); break;
-                case "Draw Diamond":
-                    DrawDiamond(e, pen, x0, y0, x1, y1, x2, y2, x3, y3); break;
-                case "Draw Pentagon":
-                    DrawPentagon(e, pen, x0, y0, x1, y1, x2, y2, x3, y3, x4, y4); break;
-            }
-
-            imported_shape = false;
-        }
-
-
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            operation = "Draw Triangle";
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            operation = "Draw Rectangle";
-        }
-
-
-        private void Form1_MouseClick(object sender, MouseEventArgs e)
-        {
-            qtd_clicks++;
-            if(qtd_clicks == 5)
-            {
-                
-                x4 = e.X; y4 = e.Y;
-                if(operation == "Draw Pentagon")
-                {
-                    qtd_clicks = 0;
-                    Invalidate();
-                }
-                
-            }
-            else if(qtd_clicks == 4)
-            {
-                x3 = e.X; y3 = e.Y;
-                if(operation == "Draw Diamond")
-                {
-                    qtd_clicks = 0;
-                    Invalidate();
-                }
-            }
-            else if (qtd_clicks == 3)
-            {
-                x2 = e.X; y2 = e.Y;
-                if (operation == "Draw Triangle")
-                {
-                    qtd_clicks = 0;
-                    Invalidate();
-                }                    
-            }
-            else if (qtd_clicks == 2)
-            {
-                x1 = e.X; y1 = e.Y;
-                if (operation == "Draw Rectangle")
-                {
-                    qtd_clicks = 0;
-                    Invalidate();
-
-                }else if (operation == "Draw Line")
-                {
-                    qtd_clicks = 0;
-                    Invalidate();
-                }
-            }
-            else if (qtd_clicks == 1)
-            {
-                x0 = e.X; y0 = e.Y;
-                if(operation == "Draw Circle")
-                {
-                    qtd_clicks = 0;
-                    Invalidate();
-                    
-                }else if(operation == "Draw Elipse")
-                {
-                    qtd_clicks = 0;
-                    Invalidate();
-                }
-            }
         }
     }
 }
