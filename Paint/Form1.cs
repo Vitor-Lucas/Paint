@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,13 +17,19 @@ namespace Paint
     {
 
         int qtd_clicks = 0;
-        int x0, y0, x1, y1, x2, y2,r,r_x,r_y,initial;
+        int x0, y0, 
+            x1, y1, 
+            x2, y2,
+            x3, y3,
+            x4, y4,
+            r,r_x,r_y,initial;
 
-        Color Color1,Color2;
-
+        
+        
 
         String operation;
         String cor;
+        String json;
 
         public Form1()
         {
@@ -35,28 +42,32 @@ namespace Paint
 
             return pen;
         }
+
         void DrawLine(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1)
         {
             e.Graphics.DrawLine(pen, x0, y0, x1, y1);
+            json = "{ \"Reta\": \"X1\", \"Y1\": “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "] }";
         }
         
         void DrawPoint(PaintEventArgs e, Pen pen, int x, int y)
         {
             e.Graphics.DrawLine(pen, x, y, x+1, y);
+            
         }
 
         void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, float radius, int initial_angle, int final_angle)
         {
-            for(float thetha = initial_angle; thetha <= final_angle; thetha+= 0.33f)
+            for (float thetha = initial_angle; thetha <= final_angle; thetha += 0.33f)
             {
                 double theta_radians = thetha * Math.PI / 180;
-                int x = (int) (x_center + radius * Math.Cos(theta_radians));
-                int y = (int) (y_center + radius * Math.Sin(theta_radians));
+                int x = (int)(x_center + radius * Math.Cos(theta_radians));
+                int y = (int)(y_center + radius * Math.Sin(theta_radians));
 
                 DrawPoint(e, pen, x, y);
             }
-        }
 
+            json = "{ \"Circulo\": \"X_CENTER\", \"Y_CENTER\", “RADIUS” :[" + x_center + "," + y_center + "," + radius + "] }";
+        }
         void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, int radius_x, int radius_y, int initial_angle, int final_angle)
         {
             for (float thetha = initial_angle; thetha <= final_angle; thetha += 0.33f)
@@ -67,11 +78,14 @@ namespace Paint
 
                 DrawPoint(e, pen, x, y);
             }
+
+            json = "{ \"Elipse\": \"X_CENTER\", \"Y_CENTER\": “X_RAIO”,”Y_RAIO” : “INITIAL_ANGLE”,”FINAL_ANGLE”:[" + x_center + "," + y_center + ":" + radius_x + "," + radius_y + ":" + initial_angle + "," + final_angle + "] }";
         }
 
         void DrawRectangle(PaintEventArgs e, Pen pen, int x, int y, int width, int height)
         {
             e.Graphics.DrawRectangle(pen, x, y, width, height);
+            json = "{ \"Retangulo\": \"X\", \"Y\": “WIDTH”,”HEIGHT”:[" + x + "," + y + "," + width + "," + height + "] }";
         }
 
         void DrawTriangle(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2)
@@ -79,6 +93,30 @@ namespace Paint
             DrawLine(e, pen, x0, y0, x1, y1);
             DrawLine(e, pen, x1, y1, x2, y2);
             DrawLine(e, pen, x2, y2, x0, y0);
+
+            json = "{ \"Triangulo\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2”[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "] }";
+        }
+
+        void DrawPentagon(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
+        {
+            DrawLine(e, pen, x0, y0, x1, y1);
+            DrawLine(e, pen, x2, y2, x1, y1);
+            DrawLine(e, pen, x2, y2, x3, y3);
+            DrawLine(e, pen, x4, y4, x3, y3);
+            DrawLine(e, pen, x4, y4, x0, y0);
+
+            json = "{ \"Pentagono\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : “X4”,”Y4”: [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "," + x4 + "," + y4 + "] }";
+        }
+
+        void DrawDiamond(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3)
+        {
+            DrawLine(e,pen, x0, y0, x1, y1);
+            DrawLine(e,pen, x2, y2, x1, y1);
+            DrawLine(e,pen, x3, y3, x2, y2);
+            DrawLine(e,pen, x0, y0, x3, y3);
+
+            json = "{ \"Diamond\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "] }";
+
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -93,12 +131,27 @@ namespace Paint
 
         private void button8_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void button27_Click(object sender, EventArgs e)
         {
             operation = "Draw Line";
+            MessageBox.Show(button10.BackColor.ToString());
+        }
+
+        private void salvar_button_Click(object sender, EventArgs e)
+        {
+            String path = @"C:\Arquivos\dados.dat";
+            StreamWriter arquivo = new StreamWriter(path);
+            arquivo.WriteLine(json);
+            arquivo.Close();
+        }
+
+        private void carregar_button_Click(object sender, EventArgs e)
+        {
+            StreamReader arquivo = new StreamReader(openFileDialog1.ShowDialog().ToString());
+            MessageBox.Show(arquivo.ReadToEnd());
         }
 
         private void button13_Click(object sender, EventArgs e)
@@ -111,9 +164,19 @@ namespace Paint
             cor = "Green";
         }
 
+        private void ColorsComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void button7_Click(object sender, EventArgs e)
         {
             cor = "Black";
+        }
+
+        private void pentagono_button_Click(object sender, EventArgs e)
+        {
+            operation = "Draw Pentagon";
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -136,17 +199,12 @@ namespace Paint
             String str_ry = Interaction.InputBox("Digite o a largura da elipse:", "", "");
             r_y = int.Parse(str_ry);
 
-            operation = "Draw elipse";
+            operation = "Draw Elipse";
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            operation = "Draw losangle";
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            operation = "Draw pentagono";
+            operation = "Draw Diamond";
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -180,11 +238,10 @@ namespace Paint
                     DrawArc(e, pen, x0, y0, r_x, r_y, initial, 360); break;
                 case "Draw Line":
                     DrawLine(e, pen, x0, y0, x1, y1); break;
-
-                    /*case "Draw losangle":
-                              DrawLosangle(); break;
-                    case "Draw pentagono":
-                              DrawPentagono(); break;*/
+                case "Draw Diamond":
+                    DrawDiamond(e, pen, x0, y0, x1, y1, x2, y2, x3, y3); break;
+                case "Draw Pentagon":
+                    DrawPentagon(e, pen, x0, y0, x1, y1, x2, y2, x3, y3, x4, y4); break;
             }
                       
 
@@ -206,14 +263,34 @@ namespace Paint
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
             qtd_clicks++;
-            if (qtd_clicks == 3)
+            if(qtd_clicks == 5)
             {
-                qtd_clicks = 0;
+                
+                x4 = e.X; y4 = e.Y;
+                if(operation == "Draw Pentagon")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                }
+                
+            }
+            else if(qtd_clicks == 4)
+            {
+                x3 = e.X; y3 = e.Y;
+                if(operation == "Draw Diamond")
+                {
+                    qtd_clicks = 0;
+                    Invalidate();
+                }
+            }
+            else if (qtd_clicks == 3)
+            {
                 x2 = e.X; y2 = e.Y;
                 if (operation == "Draw Triangle")
+                {
+                    qtd_clicks = 0;
                     Invalidate();
-                
-                    
+                }                    
             }
             else if (qtd_clicks == 2)
             {
