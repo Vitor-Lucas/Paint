@@ -27,6 +27,8 @@ namespace Paint
             radius,radius_x,radius_y,
             initial_angle, final_angle;
 
+
+        int thickness_index, style_index;
         int red, green, blue;
 
         System.Windows.Forms.Button selected_color_button;
@@ -72,7 +74,7 @@ namespace Paint
         void DrawLine(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1)
         {
             e.Graphics.DrawLine(pen, x0, y0, x1, y1);
-            json = "{ \"Line\": \"X1\", \"Y1\": “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
+            json = "{ \"Line\": \"X1\", \"Y1\": “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "," + thickness_index + "," + style_index + "] }";
         }
         
         void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, float radius, int initial_angle, int final_angle)
@@ -86,7 +88,7 @@ namespace Paint
                 DrawPoint(e, pen, x, y);
             }
 
-            json = "{ \"Circle\": \"X_CENTER\", \"Y_CENTER\", “RADIUS” :[" + x_center + "," + y_center + "," + radius + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
+            json = "{ \"Circle\": \"X_CENTER\", \"Y_CENTER\", “RADIUS” :[" + x_center + "," + y_center + "," + radius + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "," + thickness_index + "," + style_index + "] }";
         }
         void DrawArc(PaintEventArgs e, Pen pen, int x_center, int y_center, int radius_x, int radius_y, int initial_angle, int final_angle)
         {
@@ -99,7 +101,7 @@ namespace Paint
                 DrawPoint(e, pen, x, y);
             }
 
-            json = "{ \"Elipse\": \"X_CENTER\", \"Y_CENTER\": “X_RAIO”,”Y_RAIO” : “INITIAL_ANGLE”,”FINAL_ANGLE”:[" + x_center + "," + y_center + "," + radius_x + "," + radius_y + "," + initial_angle + "," + final_angle + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
+            json = "{ \"Elipse\": \"X_CENTER\", \"Y_CENTER\": “X_RAIO”,”Y_RAIO” : “INITIAL_ANGLE”,”FINAL_ANGLE”:[" + x_center + "," + y_center + "," + radius_x + "," + radius_y + "," + initial_angle + "," + final_angle + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "," + thickness_index + "," + style_index + "] }";
         }
 
         void DrawRectangle(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1)
@@ -111,7 +113,7 @@ namespace Paint
 
 
             e.Graphics.DrawRectangle(pen, x, y, width, height);
-            json = "{ \"Rectangle\": \"X0\", \"Y0\": “X1”,”Y1”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
+            json = "{ \"Rectangle\": \"X0\", \"Y0\": “X1”,”Y1”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "," + thickness_index + "," + style_index + "] }";
         }
 
         void DrawTriangle(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2)
@@ -120,7 +122,7 @@ namespace Paint
             DrawLine(e, pen, x1, y1, x2, y2);
             DrawLine(e, pen, x2, y2, x0, y0);
 
-            json = "{ \"Triangle\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
+            json = "{ \"Triangle\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2”:[" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "," + thickness_index + "," + style_index + "] }";
         }
 
         void DrawPentagon(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
@@ -131,18 +133,17 @@ namespace Paint
             DrawLine(e, pen, x4, y4, x3, y3);
             DrawLine(e, pen, x4, y4, x0, y0);
 
-            json = "{ \"Pentagon\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : “X4”,”Y4”: [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "," + x4 + "," + y4 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
+            json = "{ \"Pentagon\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : “X4”,”Y4”: [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "," + x4 + "," + y4 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "," + thickness_index + "," + style_index + "] }";
         }
 
         void DrawDiamond(PaintEventArgs e, Pen pen, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3)
         {
-            DrawLine(e,pen, x0, y0, x1, y1);
+            DrawLine(e,pen, x0, y0, x2, y2);
             DrawLine(e,pen, x2, y2, x1, y1);
-            DrawLine(e,pen, x3, y3, x2, y2);
+            DrawLine(e,pen, x1, y1, x3, y3);
             DrawLine(e,pen, x0, y0, x3, y3);
 
-            json = "{ \"Diamond\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "] }";
-
+            json = "{ \"Diamond\": \"X0\", \"Y0\": “X1”,”Y1”: “X2”,”Y2” : “X3”,”Y3” : [" + x0 + "," + y0 + "," + x1 + "," + y1 + "," + x2 + "," + y2 + "," + x3 + "," + y3 + "," + pen.Color.R + "," + pen.Color.G + "," + pen.Color.B + "," + thickness_index + "," + style_index + "] }";
         }
 
         
@@ -189,6 +190,8 @@ namespace Paint
                     red = int.Parse(variables[6]);
                     green = int.Parse(variables[7]);
                     blue = int.Parse(variables[8]);
+                    thickness_index = int.Parse(variables[9]);
+                    style_index = int.Parse(variables[10]);
                     draw_operation = "Draw Triangle";
                     break;
 
@@ -207,6 +210,8 @@ namespace Paint
                     red = int.Parse(variables[10]);
                     green = int.Parse(variables[11]);
                     blue = int.Parse(variables[12]);
+                    thickness_index = int.Parse(variables[13]);
+                    style_index = int.Parse(variables[14]);
                     draw_operation = "Draw Pentagon";
                     break;
 
@@ -219,6 +224,8 @@ namespace Paint
                     red = int.Parse(variables[4]);
                     green = int.Parse(variables[5]);
                     blue = int.Parse(variables[6]);
+                    thickness_index = int.Parse(variables[7]);
+                    style_index = int.Parse(variables[8]);
                     draw_operation = "Draw Rectangle";
                     break;
 
@@ -235,6 +242,8 @@ namespace Paint
                     red = int.Parse(variables[8]);
                     green = int.Parse(variables[9]);
                     blue = int.Parse(variables[10]);
+                    thickness_index = int.Parse(variables[11]);
+                    style_index = int.Parse(variables[12]);
                     draw_operation = "Draw Diamond";
                     break;
 
@@ -246,6 +255,8 @@ namespace Paint
                     red = int.Parse(variables[3]);
                     green = int.Parse(variables[4]);
                     blue = int.Parse(variables[5]);
+                    thickness_index = int.Parse(variables[6]);
+                    style_index = int.Parse(variables[7]);
                     draw_operation = "Draw Circle";
                     break;
 
@@ -260,6 +271,8 @@ namespace Paint
                     red = int.Parse(variables[6]);
                     green = int.Parse(variables[7]);
                     blue = int.Parse(variables[8]);
+                    thickness_index = int.Parse(variables[9]);
+                    style_index = int.Parse(variables[10]);
                     draw_operation = "Draw Elipse";
                     break;
 
@@ -272,6 +285,8 @@ namespace Paint
                     red = int.Parse(variables[4]);
                     green = int.Parse(variables[5]);
                     blue = int.Parse(variables[6]);
+                    thickness_index = int.Parse(variables[7]);
+                    style_index = int.Parse(variables[8]);
                     draw_operation = "Draw Line";
                     break;
             }
@@ -282,24 +297,24 @@ namespace Paint
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
 
-            int thickness = espessura.SelectedIndex;
-            float[] pattern = GetPattern(patternComboBox.SelectedIndex);
+            if (!imported_shape)
+            {
+                red = (int)selected_color_button.BackColor.R;
+                green = (int)selected_color_button.BackColor.G;
+                blue = (int)selected_color_button.BackColor.B;
+                thickness_index = espessura.SelectedIndex;
+                style_index = patternComboBox.SelectedIndex;
+            }
+
+            float[] pattern = GetPattern(style_index);
             
 
             if (pattern == null)
                 return;
 
             
-            if (!imported_shape)
-            {
-                red = (int) selected_color_button.BackColor.R;
-                green = (int) selected_color_button.BackColor.G;
-                blue = (int) selected_color_button.BackColor.B;
-            }
             
-            
-            Pen pen = GetPen(red, green, blue, thickness, pattern);
-                
+            Pen pen = GetPen(red, green, blue, thickness_index, pattern);
 
             switch (draw_operation)
             {

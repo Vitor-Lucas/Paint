@@ -36,6 +36,8 @@
             this.pentagono_button = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.Cores = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.SecondColorButton = new System.Windows.Forms.Button();
@@ -68,8 +70,6 @@
             this.button8 = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.estilo = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.Cores = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -154,7 +154,7 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.BackColor = System.Drawing.Color.LightGray;
+            this.panel1.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.Cores);
             this.panel1.Controls.Add(this.label4);
@@ -198,6 +198,24 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1172, 157);
             this.panel1.TabIndex = 7;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(149, 108);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(63, 20);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Formas";
+            // 
+            // Cores
+            // 
+            this.Cores.AutoSize = true;
+            this.Cores.Location = new System.Drawing.Point(846, 108);
+            this.Cores.Name = "Cores";
+            this.Cores.Size = new System.Drawing.Size(51, 20);
+            this.Cores.TabIndex = 9;
+            this.Cores.Text = "Cores";
             // 
             // label4
             // 
@@ -515,29 +533,11 @@
             this.estilo.Size = new System.Drawing.Size(121, 28);
             this.estilo.TabIndex = 0;
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(149, 108);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(63, 20);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Formas";
-            // 
-            // Cores
-            // 
-            this.Cores.AutoSize = true;
-            this.Cores.Location = new System.Drawing.Point(846, 108);
-            this.Cores.Name = "Cores";
-            this.Cores.Size = new System.Drawing.Size(51, 20);
-            this.Cores.TabIndex = 9;
-            this.Cores.Text = "Cores";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1152, 574);
             this.Controls.Add(this.panel1);
             this.Name = "Form1";
